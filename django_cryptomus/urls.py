@@ -10,7 +10,7 @@ callback_view_class = import_string(getattr(settings, "CRYPTOMUS_CALLBACK_VIEW_C
 
 app_name= "django_cryptomus"
 urlpatterns = [
-    path(getattr(settings, "CRYPTOMUS_CREATE_TRANSACTION_URL", "django_cryptomus/cryptomus/create-transaction/") , CreateTransactionView.as_view(), name="create-transaction"),
-    path(getattr(settings, "CRYPTOMUS_SUCCESS_URL", "django_cryptomus/cryptomus/success/") , success_view_class.as_view(), name="succsess-payment"),
-    path(getattr(settings, "CRYPTOMUS_CALLBACK_URL", "django_cryptomus/cryptomus/callback/") , callback_view_class.as_view(), name="callback-payment"),
+    path(getattr(settings, "CRYPTOMUS_CREATE_TRANSACTION_URL", "cryptomus/create-transaction/") , CreateTransactionView.as_view(), name="create-transaction"),
+    path(getattr(settings, "CRYPTOMUS_SUCCESS_URL", "cryptomus/success/") , success_view_class.as_view(), name="succsess-payment"),
+    path(getattr(settings, "CRYPTOMUS_CALLBACK_URL", "cryptomus/callback/") , callback_view_class.as_view(), name="callback-payment"),
 ]

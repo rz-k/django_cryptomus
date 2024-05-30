@@ -7,7 +7,7 @@ from django.conf import settings
 from .models import CryptoMusPayment
 from uuid import uuid4
 from cryptomus import Client
-
+from rest_framework.permissions import IsAuthenticated
 
 
 class Metadata:
@@ -17,7 +17,8 @@ class Metadata:
     url_success = getattr(settings, "CRYPTOMUS_BASE_URL") + getattr(settings, "CRYPTOMUS_SUCCESS_URL", "/payment/cryptopay/cryptomus/success/")
 
 class CreateTransactionView(APIView, Metadata):
-
+    permission_classes = (IsAuthenticated,)
+    
     def post(self, request, *args, **kwargs):
 
         if request.content_type == 'application/json':
@@ -61,20 +62,22 @@ class CreateTransactionView(APIView, Metadata):
 
     def get(self, request, *args, **kwargs):
         form = CryptoPaymentForm()
-        return render(request, getattr(settings, 'CRYPTOMUS_PAYMENT_HTML_FORM', 'cryptopay/payment_form.html'), {'form': form})
+        return render(request, getattr(settings, 'CRYPTOMUS_PAYMENT_HTML_FORM', 'django_cryptomus/payment_form.html'), {'form': form})
 
 class SuccessCryptomusView(APIView):
 
     def get(self, request):
-        return render(request, getattr(settings, 'CRYPTOMUS_PAYMENT_SUCCESS_HTML', 'cryptopay/success_page.html'), {'form': form})
+        return render(request, getattr(settings, 'CRYPTOMUS_PAYMENT_SUCCESS_HTML', 'django_cryptomus/success_page.html'))
         
 class CallbackCryptomusView(APIView):
 
     def post(self, request):
+        
         data = request.data
         if data['status'] == 'paid':
-            cryptopay = CryptoMusPayment.objects.filter(order_id=data['order_id'])
-            cryptopay.update(
+            cryptomus_payment = CryptoMusPayment.objects.filter(order_id=data['order_id'])
+            
+            cryptomus_payment.update(
                 payment_amount_usd=data['payment_amount_usd'],
                 payer_currency=data['payer_currency'],
                 from_addres=data['from'],
