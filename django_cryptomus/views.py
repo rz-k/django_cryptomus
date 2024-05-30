@@ -48,11 +48,12 @@ class CreateTransactionView(APIView, Metadata):
             if 'additional_data' in form.cleaned_data and form.cleaned_data['additional_data']:
                 payment_data.update(form.cleaned_data['additional_data'])
             
-            # payment_data['cryptomus_payment_db_id']=cryptomus_payment.pk
-            print(payment_data)
             response = self.send_to_cryptomus(payment_data)
+            
+            if request.content_type == 'application/json':
+                return Response(response, status=status.HTTP_200_OK)
             return redirect(to=response['url'])
-            return Response(response, status=status.HTTP_200_OK)
+
 
         return Response({"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST)
 
