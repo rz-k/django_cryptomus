@@ -11,10 +11,25 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class Metadata:
-    api_key = getattr(settings, "CRYPTOMUS_API_KEY")
-    merchant = getattr(settings, "CRYPTOMUS_MERCHANT") 
-    callback_url = getattr(settings, "CRYPTOMUS_BASE_URL") + getattr(settings, "CRYPTOMUS_CALLBACK_URL", "/payment/cryptopay/cryptomus/callback/")
-    url_success = getattr(settings, "CRYPTOMUS_BASE_URL") + getattr(settings, "CRYPTOMUS_SUCCESS_URL", "/payment/cryptopay/cryptomus/success/")
+    """
+    Class for handling Cryptomus related metadata.
+    """
+
+    @property
+    def api_key(self):
+        return getattr(settings, "CRYPTOMUS_API_KEY")
+
+    @property
+    def merchant(self):
+        return getattr(settings, "CRYPTOMUS_MERCHANT") 
+
+    @property
+    def url_callback(self):
+        return getattr(settings, "CRYPTOMUS_BASE_URL") + getattr(settings, "CRYPTOMUS_CALLBACK_URL", "/payment/cryptopay/cryptomus/callback/")
+
+    @property
+    def url_success(self):
+        return getattr(settings, "CRYPTOMUS_BASE_URL") + getattr(settings, "CRYPTOMUS_SUCCESS_URL", "/payment/cryptopay/cryptomus/success/")
 
 class CreateTransactionView(APIView, Metadata):
     """
@@ -67,7 +82,7 @@ class CreateTransactionView(APIView, Metadata):
                 "amount": str(form.cleaned_data['amount']),
                 "currency": form.cleaned_data['currency'],
                 "order_id": str(order_id),
-                "url_callback": self.callback_url.format(cryptomus_payment.pk),
+                "url_callback": self.url_callback.format(cryptomus_payment.pk),
                 "url_success": self.url_success.format(cryptomus_payment.pk)
             }
             # Merge additional data if provided
@@ -158,7 +173,7 @@ class CallbackCryptomusView(APIView):
         Returns:
             Response: A response object containing the callback data and HTTP status 200.
         """
-        
+
         data = request.data
         if data['status'] == 'paid':
             cryptomus_payment = CryptoMusPayment.objects.filter(order_id=data['order_id'])
