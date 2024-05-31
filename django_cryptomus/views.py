@@ -17,9 +17,35 @@ class Metadata:
     url_success = getattr(settings, "CRYPTOMUS_BASE_URL") + getattr(settings, "CRYPTOMUS_SUCCESS_URL", "/payment/cryptopay/cryptomus/success/")
 
 class CreateTransactionView(APIView, Metadata):
+    """
+    API view for creating a transaction with Cryptomus payment gateway.
+
+    This view handles POST requests to create a new payment transaction and GET requests to render a payment form.
+
+    Attributes:
+        permission_classes (tuple): Specifies the permissions that are required to access this view.
+    
+    Methods:
+        post(request, *args, **kwargs): Handles POST requests to create a new payment transaction.
+        send_to_cryptomus(payload): Sends the payment data to the Cryptomus payment gateway.
+        get(request, *args, **kwargs): Handles GET requests to render the payment form.
+    """
+
     permission_classes = (IsAuthenticated,)
     
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
+        """
+        Handle POST requests to create a new payment transaction.
+
+        Depending on the content type of the request, it processes the data using a form and sends it to the Cryptomus payment gateway.
+
+        Args:
+            request (HttpRequest): The request object containing the POST data
+
+        Returns:
+            Response: A DRF Response object containing the response from the Cryptomus payment gateway.
+            HttpResponseRedirect: A redirect response to the Cryptomus payment URL if the request is not JSON.
+        """
 
         if request.content_type == 'application/json':
             data = request.data
@@ -53,26 +79,85 @@ class CreateTransactionView(APIView, Metadata):
             if request.content_type == 'application/json':
                 return Response(response, status=status.HTTP_200_OK)
             return redirect(to=response['url'])
-
-
         return Response({"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def send_to_cryptomus(self, payload):
+        """
+        Send the payment data to the Cryptomus payment gateway.
+
+        Args:
+            payload (dict): The payment data to be sent to the payment gateway.
+
+        Returns:
+            dict: The response from the payment gateway.
+        """
         payment = Client.payment(payment_key=self.api_key, merchant_uuid=self.merchant)
         return payment.create(payload)
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
+        """
+        Handle GET requests to render the payment form.
+        Renders a payment form template to collect payment details from the user.
+
+        Returns:
+            HttpResponse: A response object containing the rendered form template.
+        """
         form = CryptoPaymentForm()
         return render(request, getattr(settings, 'CRYPTOMUS_PAYMENT_HTML_FORM', 'django_cryptomus/payment_form.html'), {'form': form})
 
 class SuccessCryptomusView(APIView):
+    """
+    API view for handling the success page of Cryptomus payment.
+
+    This view renders a success page after a successful payment. 
+    Users can override this view by specifying their own success view in the Django settings.
+
+    Methods:
+        get(request): Handles GET requests to render the success page.
+    """
 
     def get(self, request):
+        """
+        Handle GET requests to render the success page.
+
+        Renders a success page template specified in the settings. If not specified, the default template is used.
+
+        Args:
+            request (HttpRequest): The request object.
+
+        Returns:
+            HttpResponse: A response object containing the rendered success page template.
+        """
         return render(request, getattr(settings, 'CRYPTOMUS_PAYMENT_SUCCESS_HTML', 'django_cryptomus/success_page.html'))
         
 class CallbackCryptomusView(APIView):
+    """
+    API view for handling callback requests from Cryptomus.
+
+    This view processes callback requests sent by Cryptomus to update the payment status 
+    and details in the database.
+
+    Note:
+        Users can override this view by specifying a custom callback view in their settings.
+        If no custom view is specified, this default view will be used.
+
+    Methods:
+        post(request): Handles POST requests to process the callback data from Cryptomus.
+    """
 
     def post(self, request):
+        """
+        Handle POST requests to process the callback data from Cryptomus.
+
+        Processes the callback data sent by Cryptomus and updates the payment details 
+        in the database if the payment status is 'paid'.
+
+        Args:
+            request (HttpRequest): The request object containing callback data.
+
+        Returns:
+            Response: A response object containing the callback data and HTTP status 200.
+        """
         
         data = request.data
         if data['status'] == 'paid':
