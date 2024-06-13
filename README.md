@@ -1,6 +1,13 @@
 # Django Cryptomus
 
-Django Cryptomus is a package for Django that allows you to fortify web applications with robust security measures. This package is entirely dynamic, enabling you to configure all aspects of your site's security based on your specific needs.
+Django Cryptomus is a Django package designed to enhance web applications with robust payment processing capabilities using Cryptomus services. Cryptomus provides a secure and dynamic platform for managing payment transactions through various cryptocurrencies.
+
+## About Cryptomus
+
+Cryptomus is a platform that facilitates secure and efficient cryptocurrency payment processing solutions for businesses and developers. It allows users to create invoices, handle payment transactions, and customize payment forms and callbacks according to specific business needs.
+
+With Django Cryptomus, developers can integrate Cryptomus functionalities seamlessly into their Django applications. This package offers dynamic configuration settings, enabling developers to tailor security measures and payment processes based on their project requirements.
+
 
 ## Features
 
