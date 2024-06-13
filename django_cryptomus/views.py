@@ -25,11 +25,11 @@ class Metadata:
 
     @property
     def url_callback(self):
-        return getattr(settings, "CRYPTOMUS_BASE_URL") + getattr(settings, "CRYPTOMUS_CALLBACK_URL", "/payment/cryptopay/cryptomus/callback/")
+        return getattr(settings, "CRYPTOMUS_BASE_URL") + getattr(settings, "CRYPTOMUS_CALLBACK_URL", "/payment/cryptomus/callback/")
 
     @property
     def url_success(self):
-        return getattr(settings, "CRYPTOMUS_BASE_URL") + getattr(settings, "CRYPTOMUS_SUCCESS_URL", "/payment/cryptopay/cryptomus/success/")
+        return getattr(settings, "CRYPTOMUS_BASE_URL") + getattr(settings, "CRYPTOMUS_SUCCESS_URL", "/payment/cryptomus/success/")
 
 class CreateTransactionView(APIView, Metadata):
     """
