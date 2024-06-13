@@ -91,6 +91,43 @@ You have the flexibility to create your own custom HTML form and use it instead 
 CRYPTOMUS_CUSTOM_PAYMENT_FORM = 'templates_path/custom_payment_form.html'
 ```
 
+## JSON Example for Payment Data
+In addition to using an HTML form, you can also provide payment data in JSON format. This can be useful for API integrations or other programmatic uses. Here is an example of the required fields in JSON format:
+
+``` json
+{
+    "amount": "100.00",
+    "currency": "USD",
+    "order_id": "123456",
+    "additional_data": {
+        "network": "BTC",
+        "is_payment_multiple": true,
+        "lifetime": 3600,
+        "to_currency": "BTC",
+        "subtract": 0,
+        "accuracy_payment_percent": 0,
+        "additional_data": "Additional information for merchant",
+        "currencies": ["BTC", "ETH", "LTC"],
+        "except_currencies": [],
+        "course_source": "Binance",
+        "from_referral_code": "your_referral_code",
+        "discount_percent": 5,
+        "is_refresh": false
+    }
+}
+```
+To use JSON instead of a form, simply send a POST request to the appropriate endpoint with the JSON data. This approach allows for more flexibility and can easily be integrated into various systems and applications.
+
+## Additional Data
+
+The `additional_data` field in JSON is used to send additional data and advanced settings in the payment transaction request. This field is optional, meaning you can include it or omit it based on your requirements.
+
+To get detailed information about each parameter within `additional_data` and how to use them, please refer to the official Cryptomus documentation:
+
+- [Cryptomus Documentation on Creating Invoice](https://doc.cryptomus.com/payments/creating-invoice)
+
+You can find comprehensive details about each parameter in the `additional_data` field, enabling you to utilize them effectively for your needs.
+
 ## Customizing Cryptomus Callback View and Using CryptoMusPayment Model
 
 If you want to customize the behavior of the callback view provided by Django Cryptomus and use the `CryptoMusPayment` model to manage payment records, follow these steps:
